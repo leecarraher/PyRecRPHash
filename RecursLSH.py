@@ -5,7 +5,6 @@ def hashvec(x):
         super simple hash algorithm, reminiscient of pstable lsh
     '''
     s = 0
-
     for i in xrange(len(x)):
         s<<=1
         if x[i]> 0:s+=1
@@ -39,7 +38,6 @@ def medoid(X):
     for i in xrange(1,len(X)):
         for j in xrange(len(X[i])): ret[j]+=X[i][j]
     for j in  xrange(len(ret)):ret[j]= ret[j]/float(len(X))
-
     return ret
 
 def isPowerOfTwo (x):
@@ -52,7 +50,6 @@ def findDensityModes(X,k,l):
         l - clustering sub-space
         Compute density mode via iterative deepening hash counting
     '''
-
     #our counter, replace with mincount hash
     IDAndCount = {}
     IDAndCent = {}
@@ -66,8 +63,6 @@ def findDensityModes(X,k,l):
     for x in X:
         addtocounter(x,M,P,IDAndCount, IDAndCent,l)
 
-    #we are adding everything and sorting here, real implementation would
-    #use a priority queue, heap, skiplist, redblack, and may be bounded
     densityAndID = []
     for h in sort(IDAndCount.keys()):
         densityAndID.append((IDAndCount[h],h))
@@ -75,7 +70,6 @@ def findDensityModes(X,k,l):
         h>>=1
         if densityAndID.__contains__((IDAndCount[h],h)):
             densityAndID.remove((IDAndCount[h],h))
-
     # sort
     densityAndID.sort(reverse=True)
 
@@ -90,34 +84,15 @@ def findDensityModes(X,k,l):
         d =estcentsmap.keys()[i]
         for ii in xrange(i+1,len(estcentsmap.keys())):
             dd = estcentsmap.keys()[ii]
-            stddxor = bin(d^dd)
-            if stddxor.count('1')==1:
-                mergelist.append([len(stddxor),[d,dd]])
-
-    mergelist.sort(reverse=True)
-    '''
-    print mergelist
-
-    mergelist = []
-    for i in xrange(len(estcentsmap.keys())):
-        d =estcentsmap.keys()[i]
-        for ii in xrange(i+1,len(estcentsmap.keys())):
-            dd = estcentsmap.keys()[ii]
-            if isPowerOfTwo(d^dd)==1:
+            if isPowerOfTwo(d^dd):
                 mergelist.append([d^dd,[d,dd]])
 
-
     mergelist.sort(reverse=True)
 
-    print "=============================="
-    print mergelist
-    '''
     for mergers in mergelist:
         if len(estcentsmap) == k:
             return estcentsmap
         if estcentsmap.has_key(mergers[1][1]) and estcentsmap.has_key(mergers[1][0]):
             estcentsmap[mergers[1][1]] = medoid(vstack((estcentsmap[mergers[1][0]],estcentsmap[ mergers[1][1] ])))
         estcentsmap.pop(mergers[1][0],None)
-    return estcentsmap#clustdict
-
-
+    return estcentsmap

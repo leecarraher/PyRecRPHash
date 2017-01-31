@@ -15,8 +15,8 @@ def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
 
     cents, X = makeData(d,n,k,noise,errorperc,variance,sparseness)
     estcents = findDensityModes(X,k,l)
-    #from scipy.cluster.vq import kmeans
-    #kmcents,_ = kmeans(array(X),k)
+    from scipy.cluster.vq import kmeans
+    kmcents,_ = kmeans(array(X),k)
 
     #randomly pick the axis to plot
     xcol , ycol , zcol = randint(d),randint(d),randint(d)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
                     for xx in x:
                 b.write(str(xx)+'\n')
         '''
-        l = 63
+        l = 31
         k = 10
         d = 100
 
