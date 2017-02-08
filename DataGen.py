@@ -15,7 +15,7 @@ def makeData(d,n,k,noise = 0,errorperc=0,variance=.1,sparseness = 0):
     if sparseness>0: sparseness = int(sparseness*d)
 
     #generate some density modes
-    cents = ((-1)**randint(2)*variance)*(rand(k,d)*2-1)
+    cents = (rand(k,d)*2-1)
     for i in xrange(k):
         #add some random error bits
         for j in xrange(sparseness):
@@ -36,5 +36,11 @@ def makeData(d,n,k,noise = 0,errorperc=0,variance=.1,sparseness = 0):
 
     #add some uniform noise
     X.extend( rand(noise,d)*3-1.5 )
+    #add noise blob
+
+    #noisecent = rand(d)*2-1
+    #noise = n/8
+    #X.extend( noisecent + (randn(noise,d)*.15-.075))
+
     shuffle(X)
     return cents,X

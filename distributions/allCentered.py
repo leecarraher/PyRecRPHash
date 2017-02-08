@@ -134,7 +134,7 @@ for j in range(9):
         avg = average(Xhat[:,i])
         std = var(Xhat[:,i])**.5
         #plotobject = sns.distplot(Xhat[:,i],hist=False,kde=True)
-        #plotobject =sns.kdeplot(Xhat[:,i*2],Xhat[:,i*2+1])
+        plotobject =sns.kdeplot(Xhat[:,i*2],Xhat[:,i*2+1])
         #some matplotlib magic to turn all bars left and right of upper and lower
         #quartiles red
         #children = plotobject.get_children()
