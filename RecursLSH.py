@@ -125,11 +125,11 @@ class RecLSH():
             parent_count = self.IDAndCount[parent_id]
             sibling_id = cur_id^1
 
-            if 2*cur_count>parent_count:
-                sibling_count = 0
-                if self.IDAndCount.has_key(sibling_id):
-                    sibling_count = self.IDAndCount[sibling_id]
-                densityAndID[parent_id] = parent_count-(cur_count+sibling_count)
+            if 1.5*cur_count>parent_count:
+                #sibling_count = 0
+                #if parent_count != cur_count:
+                #    sibling_count = self.IDAndCount[sibling_id]
+                densityAndID[parent_id] = 0#parent_count-(cur_count+sibling_count)
                 densityAndID[cur_id] = cur_count
             return densityAndID
     #^^^ Various metrics for deciding whether to split a node into two clusters or not ^^^#
