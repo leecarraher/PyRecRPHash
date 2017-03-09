@@ -30,7 +30,7 @@ def weightedCentroid(A,clustersizes,keeplabel,removelabel):
     '''
         compute a new centroid based on the weighted average of two prior centroids
     '''
-    newsize = clustersizes[removelabel]+clustersizes[keeplabel]
+    newsize = float(clustersizes[removelabel]+clustersizes[keeplabel])
     weigthedRatioKeep = clustersizes[keeplabel]/newsize
     weightedRatioRemove =clustersizes[removelabel]/newsize
     newcentroid = weigthedRatioKeep*A[keeplabel]+weightedRatioRemove*A[removelabel]

@@ -1,6 +1,7 @@
 from PyIOUtils import *
-from RandomProjection import *
+from Project import *
 from RecursLSH import *
+import numpy as np
 def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
     '''
         d - dimensionality
@@ -12,11 +13,21 @@ def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
         hash count clustering and plots the data in a 3x3 subplot.
     '''
 
-    cents, X = makeData(d,n,k,noise,errorperc,variance,sparseness)
+    #different densities
+    k3 = int((k/3.0)+.5)
+    cents, X = makeData(d,n,k,noise,errorperc,2*variance,sparseness)
+    #cents2, X2 = makeData(d,n/3,k3,noise,errorperc,variance,sparseness)
+    #cents = np.append(cents,cents2, axis=0)
+    #X = np.append(X,X2, axis=0)
+    #cents3, X3 = makeData(d,n/3,k3,noise,errorperc,.2*variance,sparseness)
+    #cents = np.append(cents,cents3, axis=0)
+    #X = np.append(X,X3, axis=0)
+
+
     projector = Project(len(X[0]),l,projtype='dbf')
     clusterer = RecLSH(projector=projector)
 
-    estcents = clusterer.findDensityModes(X,k,l).values()
+    estcents = clusterer.findDensityModes(X,k,l)
 
     #randomly pick the axis to plot
     xcol , ycol , zcol = 0,1,2#randint(d),randint(d),randint(d)
@@ -31,7 +42,7 @@ def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
 
     else:
         subplot(330+((k-1)))
-        for x in X:
+        for x in X[::2]:
             x =projector.proj(x)
             plot(x[0],x[1] ,',g')
         for x in estcents:
@@ -70,33 +81,36 @@ if __name__ == "__main__":
                     for xx in x:
                 b.write(str(xx)+'\n')
         '''
-        l = 32
+        l = 24
         k = 10
-        d = 200
+        d = 100
 
         #make plots
-
         n = 2000
         fig = plt.figure()
+
         for i in range(2,11):
-            run(d,n,i,noise=.1,variance=0.5,sparseness = 1 ,errorperc =.01, is3d=False)
+            run(d,n,i,noise=0,variance=.3,sparseness = 0,errorperc =0, is3d=False)
         plt.show()
     else:
         X=readMatFile(sys.argv[1])
         k = int(sys.argv[2])
+        l = 24
+        if len(sys.argv)>3:
+            l = sys.argv[3]
 
         clusterer = RecLSH()
-        estcents = clusterer.findDensityModes(X,k,31).values()
+        estcents = clusterer.findDensityModes(X,k,l)
 
         #from scipy.cluster.vq import *
         #kmcent,_ = kmeans(array(estcents),k)
 
-        if len(argv)>2 and argv[3]=='plot=true':
+        if len(sys.argv)>3 and sys.argv[3]=='plot=true':
             from pylab import *
             import matplotlib.pyplot as plt
             fig = plt.figure()
 
-            P = randn(len(X[0]),50)
+            P = randn(len(X[0]),2)
 
             for i in xrange(len(X)):
                 X[i] = array(X[i]).dot(P)*(1/float(len(P[0])))**.5
@@ -120,7 +134,5 @@ if __name__ == "__main__":
                 plot([x[xcol] for x in estcents],[x[ycol] for x in estcents],'*',color='red',markersize=6)
 
             plt.show()
-
-
-        outfile = file('output_'+sys.argv[1],'w')
+        outfile = file(sys.argv[1]+'output_','w')
         writecents(estcents,outfile)

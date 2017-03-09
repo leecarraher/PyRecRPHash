@@ -72,12 +72,13 @@ class RecLSH():
         densityAndIDList = sorted(densityAndID.items(), key=operator.itemgetter(1),reverse=True)
         # compute medoids
         estcentsmap = {}
-        for d in densityAndIDList[:int(k*1.5)]:
+        for d in densityAndIDList[:int(k*2)]:
             idcent = d[0]
             estcentsmap[idcent] = self.medoid(self.IDAndCent[idcent])
-            print bin(idcent),len(bin(idcent))-2,d[1]
+            #print bin(idcent),len(bin(idcent))-2,d[1]
 
-        return estcentsmap
+
+        return self.offlineClusteringMerge(estcentsmap,k,densityAndIDList)
 
 
     ### Options ###
@@ -125,7 +126,7 @@ class RecLSH():
             parent_count = self.IDAndCount[parent_id]
             sibling_id = cur_id^1
 
-            if 1.5*cur_count>parent_count:
+            if 2*cur_count>parent_count:
                 #sibling_count = 0
                 #if parent_count != cur_count:
                 #    sibling_count = self.IDAndCount[sibling_id]
@@ -170,6 +171,11 @@ class RecLSH():
         ret = {}
         for d in estcentsmaplist[:int(k)]:
             ret[d[0]] = d[1]
-        return ret
+        return ret.values()
+
+    def offlineClusteringMerge(self,estcentsmap,k,counts):
+        import agglomerative
+        counts = [ct[1] for ct in counts[:len(estcentsmap)]]
+        return agglomerative.agglomerate(estcentsmap.values(),k,counts)[0]
     #^^^ Heuristics for merging oversampled clusters ^^^#
 
