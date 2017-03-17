@@ -6,6 +6,7 @@ class Project():
     def __init__(self, m,l, projtype=None, X=None):
         self.M = None
         self.P = None
+        self.sigma = None
         self.l = l
         if projtype=='dbf':
             self.M,self.P = self.genDBFriendly(m,l)
@@ -17,8 +18,12 @@ class Project():
                 self.projtype = 'random matrix '+str(m)+'x'+str(l)
             else:
                 print "warning running svd on "+str(len(X))+'x'+str(len(X[0]))+" matrix"
-                U,s,Vt = linalg.svd(X,full_matrices=False)
-                self.P =  ((Vt.T)*((1/s**.5)))[:,:l]
+                X = array(X)
+                self.mu = X.mean(axis=0)
+                self.sigma = X.std(axis=0)
+                X = (X - self.mu)/self.sigma
+                U,s,Vh = linalg.svd(X,full_matrices=False)
+                self.P =  Vh
                 self.projtype = 'svd projection '+str(m)+'x'+str(l)
         else:
             self.P = randn(m,l)
@@ -31,6 +36,7 @@ class Project():
             sparse matrices, floating point values, and is overall more computationally
             efficient.
         '''
+
         M = [ [] for i in xrange(t)]
         P = [ [] for i in xrange(t)]
         r = 0
@@ -69,9 +75,11 @@ class Project():
             this is a naive and slow random projection,
             but it's compact and to the point.
         '''
-        if self.M==None:
-            return dot(v,self.P)
-        if self.M!=None and self.P!=None:
+
+        if self.sigma!=None:
+            cntrv = (v- self.mu)/self.sigma
+            return dot(self.P, cntrv.T).T
+        elif self.M!=None and self.P!=None:
             r = [0]*self.l
             sums = 0.0
             scale = (3.0/self.l)**.5
@@ -83,8 +91,8 @@ class Project():
                     sums += v[col]
                 r[i] = sums * scale
             return r
-
-
+        else:
+            return dot(v,self.P)
 
 if __name__ == "__main__":
     print "nothing in main"

@@ -18,6 +18,7 @@ def readMatFile(name):
 
 def writeMatFile(M,name):
     f = file(name,"w")
+    print name
     f.write(str(len(M))+'\n')
     f.write(str(len(M[0]))+'\n')
     for i in xrange(len(M)):

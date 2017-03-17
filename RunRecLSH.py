@@ -15,14 +15,13 @@ def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
 
     #different densities
     k3 = int((k/3.0)+.5)
-    cents, X = makeData(d,n,k,noise,errorperc,2*variance,sparseness)
+    cents, X, labels = makeData(d,n,k,noise,errorperc,2*variance,sparseness)
     #cents2, X2 = makeData(d,n/3,k3,noise,errorperc,variance,sparseness)
     #cents = np.append(cents,cents2, axis=0)
     #X = np.append(X,X2, axis=0)
     #cents3, X3 = makeData(d,n/3,k3,noise,errorperc,.2*variance,sparseness)
     #cents = np.append(cents,cents3, axis=0)
     #X = np.append(X,X3, axis=0)
-
 
     projector = Project(len(X[0]),l,projtype='dbf')
     clusterer = RecLSH(projector=projector)
@@ -67,6 +66,7 @@ def run(d,n,k,noise = 0, is3d = False,errorperc=0,variance=.1,sparseness = 0):
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) == 1 :
         from DataGen import *
         from pylab import *
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         '''
         l = 24
         k = 10
-        d = 100
+        d = 1000
 
         #make plots
         n = 2000
@@ -95,11 +95,13 @@ if __name__ == "__main__":
     else:
         X=readMatFile(sys.argv[1])
         k = int(sys.argv[2])
-        l = 24
-        if len(sys.argv)>3:
-            l = sys.argv[3]
+        l = 30
 
-        clusterer = RecLSH()
+        if len(sys.argv)>4:
+            l = sys.argv[4]
+
+        projector = Project(len(X[0]),l,projtype='dbf')
+        clusterer = RecLSH(projector=projector)
         estcents = clusterer.findDensityModes(X,k,l)
 
         #from scipy.cluster.vq import *
@@ -134,5 +136,6 @@ if __name__ == "__main__":
                 plot([x[xcol] for x in estcents],[x[ycol] for x in estcents],'*',color='red',markersize=6)
 
             plt.show()
-        outfile = file(sys.argv[1]+'output_','w')
+
+        outfile = file(sys.argv[1]+'_output','w')
         writecents(estcents,outfile)
